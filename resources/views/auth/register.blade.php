@@ -1,52 +1,108 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+<form method="POST" action="{{ route('register') }}">
+@csrf
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-white overflow-x-hidden">
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+<!-- Hero -->
+<div class="flex flex-col items-center justify-center px-4 pb-3 pt-8">
+    <h1 class="text-3xl font-bold text-center bg-gradient-to-r from-[#78350f] via-[#b45309] to-[#f59e0b] bg-clip-text text-transparent">
+        Rejoindre EasyColoc
+    </h1>
+    <p class="text-[#78350f] text-base pt-2 text-center max-w-[280px]">
+        Gérez facilement les dépenses entre colocataires avec transparence.
+    </p>
+</div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+<!-- FORM -->
+<div class="flex flex-col gap-1 px-4 py-4 max-w-[480px] mx-auto w-full">
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+<!-- Nom -->
+<div class="flex flex-col w-full py-2">
+<label>
+<p class="text-sm font-semibold pb-2 text-gray-900">Nom complet</p>
+<div class="relative flex items-center">
+<input name="name"
+value="{{ old('name') }}"
+required autofocus
+class="form-input w-full rounded-xl h-14 pl-12 border border-gray-300 focus:border-[#78350f] focus:ring-[#78350f]"
+placeholder="nom prenom">
+</div>
+@error('name')
+<p class="text-red-500 text-sm">{{ $message }}</p>
+@enderror
+</label>
+</div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+<!-- Email -->
+<div class="flex flex-col w-full py-2">
+<label>
+<p class="text-sm font-semibold pb-2 text-gray-900">Adresse e-mail</p>
+<div class="relative flex items-center">
+<input type="email"
+name="email"
+value="{{ old('email') }}"
+required
+class="form-input w-full rounded-xl h-14 pl-12 border border-gray-300 focus:border-[#78350f] focus:ring-[#78350f]"
+placeholder="exemple@email.com">
+</div>
+@error('email')
+<p class="text-red-500 text-sm">{{ $message }}</p>
+@enderror
+</label>
+</div>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+<!-- Mot de passe -->
+<div class="flex flex-col w-full py-2">
+<label>
+<p class="text-sm font-semibold pb-2 text-gray-900">Mot de passe</p>
+<div class="relative flex items-center">
+<input type="password"
+name="password"
+required
+class="form-input w-full rounded-xl h-14 pl-12 border border-gray-300 focus:border-[#78350f] focus:ring-[#78350f]"
+placeholder="••••••••">
+</div>
+@error('password')
+<p class="text-red-500 text-sm">{{ $message }}</p>
+@enderror
+</label>
+</div>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+<!-- Confirmation -->
+<div class="flex flex-col w-full py-2">
+<label>
+<p class="text-sm font-semibold pb-2 text-gray-900">Confirmer le mot de passe</p>
+<div class="relative flex items-center">
+<input type="password"
+name="password_confirmation"
+required
+class="form-input w-full rounded-xl h-14 pl-12 border border-gray-300 focus:border-[#78350f] focus:ring-[#78350f]"
+placeholder="••••••••">
+</div>
+</label>
+</div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
+<!-- Button -->
+<div class="pt-6">
+<button type="submit"
+class="w-full  py-4 flex items-center justify-center gap-2 from-[#78350f] via-[#b45309] to-[#f59e0b] text-white font-bold text-lg rounded-xl shadow-lg shadow-[#78350f]/20 hover:opacity-90 transition-all mt-2"
+style="background-color:#78350f;">
+<span>Créer mon compte</span>
+</button>
+</div>
+<!-- Login -->
+<div class="flex flex-col items-center gap-4 py-8 ">
+<p class="text-sm text-gray-700">
+Vous avez déjà un compte ?
+<a href="{{ route('login') }}" class="font-bold" style="color:#b45309;">Se connecter</a>
+</p>
+</div>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
+</div>
+</div>
+
+</form>
+
 </x-guest-layout>
