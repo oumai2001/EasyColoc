@@ -24,9 +24,6 @@ class Payment extends Model
         'amount' => 'decimal:2'
     ];
 
-    /**
-     * Relations
-     */
     public function colocation()
     {
         return $this->belongsTo(Colocation::class);
@@ -40,13 +37,5 @@ class Payment extends Model
     public function toUser()
     {
         return $this->belongsTo(User::class, 'to_user_id');
-    }
-
-    /**
-     * Scope pour les paiements complétés
-     */
-    public function scopeCompleted($query)
-    {
-        return $query->where('status', 'completed');
     }
 }

@@ -78,13 +78,13 @@
     <section class="gradient-bg min-h-screen flex items-center pt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
             <div class="text-center max-w-3xl mx-auto">
-                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                <h1 class=" text-xl md:text-6xl font-bold text-white mb-6 leading-tight">
                     Gérez votre colocation en toute <span class="text-amber-200">simplicité</span>
                 </h1>
-                <p class="text-xl text-amber-100 mb-10">
+                <p class="text-5xl text-white mb-6">
                     EasyColoc vous aide à gérer les dépenses, suivre les remboursements et maintenir une bonne entente entre colocataires.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <div class="flex flex-col sm:flex-row gap-9 justify-center">
                     <a href="{{ route('register') }}" class="bg-white text-amber-800 px-8 py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200">
                         Commencer gratuitement
                     </a>
@@ -114,55 +114,7 @@
         </div>
     </section>
 
-    <!-- Features simples -->
-    <section id="features" class="py-20 bg-amber-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-amber-900 mb-4">Comment ça marche ?</h2>
-                <p class="text-xl text-amber-700">3 étapes simples pour gérer votre colocation</p>
-            </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="feature-card bg-white p-8 rounded-2xl text-center">
-                    <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <span class="text-2xl font-bold text-amber-800">1</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-amber-900 mb-3">Créez votre colocation</h3>
-                    <p class="text-amber-700">Invitez vos colocataires par email. Ils rejoignent en un clic.</p>
-                </div>
-
-                <!-- Feature 2 -->
-                <div class="feature-card bg-white p-8 rounded-2xl text-center">
-                    <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <span class="text-2xl font-bold text-amber-800">2</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-amber-900 mb-3">Ajoutez vos dépenses</h3>
-                    <p class="text-amber-700">Loyer, courses, factures... La répartition se fait automatiquement.</p>
-                </div>
-
-                <!-- Feature 3 -->
-                <div class="feature-card bg-white p-8 rounded-2xl text-center">
-                    <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <span class="text-2xl font-bold text-amber-800">3</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-amber-900 mb-3">Suivez les remboursements</h3>
-                    <p class="text-amber-700">Visualisez qui doit quoi et marquez les paiements effectués.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA simple -->
-    <section class="gradient-bg py-16">
-        <div class="max-w-4xl mx-auto text-center px-4">
-            <h2 class="text-3xl font-bold text-white mb-4">Prêt à simplifier votre colocation ?</h2>
-            <p class="text-xl text-amber-100 mb-8">Rejoignez des milliers de colocataires satisfaits</p>
-            <a href="{{ route('register') }}" class="bg-white text-amber-800 px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 inline-block">
-                Créer mon compte
-            </a>
-        </div>
-    </section>
 <!-- Footer -->
         @include('layouts.footer')
 </body>

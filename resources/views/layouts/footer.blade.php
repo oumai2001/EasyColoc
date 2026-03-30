@@ -18,7 +18,7 @@
                 </div>
 
                 <p class="text-[#000000] leading-relaxed">
-                    Simplifiez la gestion de votre colocation avec EasyColoc.
+                    Simplifiez la gestion de votre colocation.
                 </p>
 
                 <!-- Social icons -->

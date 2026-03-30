@@ -14,10 +14,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    {{-- Afficher les erreurs de validation --}}
                     @if($errors->any())
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                            <strong>Erreurs :</strong>
+                            <strong>Veuillez corriger les erreurs :</strong>
                             <ul class="mt-2">
                                 @foreach($errors->all() as $error)
                                     <li>- {{ $error }}</li>
@@ -26,7 +25,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('expenses.store', $colocation) }}">
+                    <form method="POST" action="{{ route('expenses.store', $colocation) }}" id="expenseForm">
                         @csrf
 
                         <!-- Informations de base -->
@@ -56,7 +55,7 @@
                                 <select name="category_id" id="category_id" 
                                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('category_id') border-red-500 @enderror"
                                         required>
-                                    <option value="">-- Choisir une catégorie --</option>
+                                    <option value="">Sélectionnez une catégorie</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                             {{ $category->name }}
@@ -107,15 +106,13 @@
                             @enderror
                         </div>
 
-                        <!-- Section partage personnalisé (cachée par défaut) -->
+                        <!-- Section partage personnalisé -->
                         <div id="customSplitSection" class="mb-4 p-4 bg-gray-50 rounded border {{ old('split_type') == 'custom' ? '' : 'hidden' }}">
                             <h4 class="font-medium mb-3">Qui doit combien ?</h4>
                             <p class="text-sm text-gray-600 mb-3">Entrez le montant que chaque membre doit rembourser :</p>
                             
-                            @php $memberCount = 0; @endphp
                             @foreach($members as $member)
                                 @if($member->id != Auth::id())
-                                    @php $memberCount++; @endphp
                                     <div class="flex items-center space-x-4 mb-3">
                                         <div class="w-32">
                                             <span class="text-gray-700 font-medium">{{ $member->name }}</span>
@@ -124,18 +121,15 @@
                                             <input type="number" 
                                                    step="0.01" 
                                                    name="amounts[]" 
-                                                   value="{{ old('amounts.' . ($loop->index - 1)) }}"
-                                                   placeholder="0.00"
-                                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                                   value="{{ old('amounts.' . $loop->index) }}"
+                                                   placeholder="Montant dû"
+                                                   class="amount-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                   data-index="{{ $loop->index }}">
                                         </div>
                                     </div>
-                                    <input type="hidden" name="debtors[]" value="{{ $member->id }}">
                                 @endif
                             @endforeach
-                            
-                            @if($memberCount == 0)
-                                <p class="text-yellow-600">Vous êtes le seul membre de cette colocation.</p>
-                            @endif
+                            <input type="hidden" name="debtors_count" value="{{ $members->count() - 1 }}">
                         </div>
 
                         <div class="flex items-center justify-end mt-6">
@@ -159,24 +153,35 @@
             const splitEqual = document.getElementById('splitEqual');
             const splitCustom = document.getElementById('splitCustom');
             const customSection = document.getElementById('customSplitSection');
+            const amountInputs = document.querySelectorAll('.amount-input');
 
-            function toggleCustomSection() {
-                if (splitCustom && splitCustom.checked) {
-                    customSection.classList.remove('hidden');
-                } else {
-                    customSection.classList.add('hidden');
-                }
+            // Fonction pour activer/désactiver les inputs
+            function toggleInputs(disabled) {
+                amountInputs.forEach(input => {
+                    input.disabled = disabled;
+                });
             }
 
+            // Gestion des radios
             if (splitEqual) {
-                splitEqual.addEventListener('change', toggleCustomSection);
-            }
-            if (splitCustom) {
-                splitCustom.addEventListener('change', toggleCustomSection);
+                splitEqual.addEventListener('change', function() {
+                    customSection.classList.add('hidden');
+                    toggleInputs(true); // Désactiver les inputs pour qu'ils ne soient pas envoyés
+                });
             }
 
-            // Initialisation
-            toggleCustomSection();
+            if (splitCustom) {
+                splitCustom.addEventListener('change', function() {
+                    customSection.classList.remove('hidden');
+                    toggleInputs(false); // Activer les inputs
+                });
+            }
+
+            // État initial
+            if (splitEqual && splitEqual.checked) {
+                customSection.classList.add('hidden');
+                toggleInputs(true);
+            }
         });
     </script>
 

@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Payment;
 class ExpenseController extends Controller
 {
     public function __construct()
@@ -38,49 +38,46 @@ class ExpenseController extends Controller
      * Enregistrer une nouvelle dépense
      */
     public function store(Request $request, Colocation $colocation)
-    {
-        // Vérifier que l'utilisateur est membre actuel
-        if (!$colocation->hasActiveMember(Auth::user())) {
-            return redirect()->route('colocations.index')
-                ->with('error', 'Vous n\'êtes pas membre de cette colocation.');
-        }
+{
+    // Vérifier que l'utilisateur est membre actuel
+    if (!$colocation->hasActiveMember(Auth::user())) {
+        return redirect()->route('colocations.index')
+            ->with('error', 'Vous n\'êtes pas membre de cette colocation.');
+    }
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0.01',
-            'category_id' => 'required|exists:categories,id',
-            'expense_date' => 'required|date',
-            'description' => 'nullable|string',
-            'split_type' => 'required|in:equal,custom',
-            'debtors' => 'required_if:split_type,custom|array',
-            'debtors.*' => 'exists:users,id',
-            'amounts' => 'required_if:split_type,custom|array',
-            'amounts.*' => 'numeric|min:0'
+    // Validation de base
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'amount' => 'required|numeric|min:0.01',
+        'category_id' => 'required|exists:categories,id',
+        'expense_date' => 'required|date',
+        'description' => 'nullable|string',
+        'split_type' => 'required|in:equal,custom'
+    ]);
+
+    DB::beginTransaction();
+    try {
+        // Créer la dépense
+        $expense = Expense::create([
+            'colocation_id' => $colocation->id,
+            'user_id' => Auth::id(),
+            'category_id' => $request->category_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'amount' => $request->amount,
+            'expense_date' => $request->expense_date,
+            'split_type' => $request->split_type
         ]);
 
-        $activeMembers = $colocation->activeUsers()->pluck('users.id')->toArray();
-
-        DB::transaction(function () use ($request, $colocation) {
-            // Créer la dépense
-            $expense = Expense::create([
-                'colocation_id' => $colocation->id,
-                'user_id' => Auth::id(),
-                'category_id' => $request->category_id,
-                'title' => $request->title,
-                'description' => $request->description,
-                'amount' => $request->amount,
-                'expense_date' => $request->expense_date,
-                'split_type' => $request->split_type
-            ]);
-
-            // Gérer les débiteurs
-            if ($request->split_type === 'equal') {
-                // Partage égal entre tous les membres actifs
-                $members = $colocation->activeUsers()->get();
-                $sharePerPerson = round($request->amount / $members->count(), 2);
+        if ($request->split_type === 'equal') {
+            // Partage égal
+            $members = $colocation->activeUsers()->get();
+            $memberCount = $members->count();
+            
+            if ($memberCount > 1) { // S'il y a d'autres membres que le payeur
+                $sharePerPerson = round($request->amount / $memberCount, 2);
                 
                 foreach ($members as $member) {
-                    // Le payeur ne se doit rien à lui-même
                     if ($member->id !== Auth::id()) {
                         $expense->debtors()->attach($member->id, [
                             'amount_owed' => $sharePerPerson,
@@ -88,23 +85,43 @@ class ExpenseController extends Controller
                         ]);
                     }
                 }
-            } else {
-                // Partage personnalisé
-                foreach ($request->debtors as $index => $debtorId) {
-                    // Ignorer si le montant est 0 ou si c'est le payeur
-                    if ($debtorId != Auth::id() && $request->amounts[$index] > 0) {
-                        $expense->debtors()->attach($debtorId, [
-                            'amount_owed' => $request->amounts[$index],
-                            'is_paid' => false
-                        ]);
+            }
+        } else {
+            // Partage personnalisé
+            if ($request->has('amounts')) {
+                foreach ($request->amounts as $index => $amount) {
+                    if ($amount > 0) {
+                        // Récupérer le membre correspondant (en sautant le payeur)
+                        $memberIndex = 0;
+                        foreach ($members as $member) {
+                            if ($member->id != Auth::id()) {
+                                if ($memberIndex == $index) {
+                                    $expense->debtors()->attach($member->id, [
+                                        'amount_owed' => $amount,
+                                        'is_paid' => false
+                                    ]);
+                                    break;
+                                }
+                                $memberIndex++;
+                            }
+                        }
                     }
                 }
             }
-        });
+        }
+
+        DB::commit();
 
         return redirect()->route('colocations.show', $colocation)
             ->with('success', 'Dépense ajoutée avec succès !');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()
+            ->with('error', 'Erreur : ' . $e->getMessage())
+            ->withInput();
     }
+}
 
     /**
      * Afficher les détails d'une dépense
@@ -173,13 +190,18 @@ public function markAsPaid(Colocation $colocation, Expense $expense, User $debto
 }
 
 // Nouvelle méthode pour marquer un remboursement direct (sans dépense spécifique)
+/**
+ * Marquer un remboursement comme payé (depuis la liste des settlements)
+ */
+/**
+ * Marquer un remboursement comme payé (depuis la liste des settlements)
+ */
 public function markSettlement(Request $request, Colocation $colocation)
 {
     $request->validate([
         'from_user_id' => 'required|exists:users,id',
         'to_user_id' => 'required|exists:users,id',
         'amount' => 'required|numeric|min:0.01',
-        'description' => 'nullable|string'
     ]);
 
     $fromUser = User::find($request->from_user_id);
@@ -198,26 +220,131 @@ public function markSettlement(Request $request, Colocation $colocation)
             ->with('error', 'Vous ne pouvez marquer qu\'un paiement qui vous concerne.');
     }
 
-    DB::transaction(function () use ($request, $colocation, $fromUser, $toUser) {
-        // Créer le paiement
+    DB::beginTransaction();
+    try {
+        // 1️⃣ Créer l'enregistrement du paiement
         Payment::create([
             'colocation_id' => $colocation->id,
             'from_user_id' => $fromUser->id,
             'to_user_id' => $toUser->id,
             'amount' => $request->amount,
-            'description' => $request->description ?? 'Remboursement',
+            'description' => 'Remboursement',
             'status' => 'completed',
             'paid_at' => now()
         ]);
 
-        // Bonus de réputation pour celui qui rembourse
-        if (Auth::id() === $fromUser->id) {
-            $fromUser->increaseReputation(1);
-        }
-    });
+        // 2️⃣ Récupérer TOUTES les dettes non payées de fromUser envers toUser
+        $debts = DB::table('expense_user')
+            ->join('expenses', 'expenses.id', '=', 'expense_user.expense_id')
+            ->where('expenses.colocation_id', $colocation->id)
+            ->where('expense_user.user_id', $fromUser->id)
+            ->where('expense_user.is_paid', false)
+            ->where('expenses.user_id', $toUser->id) // Le payeur original est toUser
+            ->select('expense_user.*', 'expenses.title as expense_title')
+            ->get();
 
-    return redirect()->route('colocations.show', $colocation)
-        ->with('success', 'Paiement enregistré avec succès !');
+        \Log::info('Dettes trouvées:', ['count' => $debts->count(), 'debts' => $debts]);
+
+        $remainingAmount = $request->amount;
+
+        // 3️⃣ Marquer les dettes comme payées une par une
+        foreach ($debts as $debt) {
+            if ($remainingAmount <= 0) break;
+            
+            $owedAmount = $debt->amount_owed;
+            
+            if ($owedAmount <= $remainingAmount) {
+                // Payer la totalité de cette dette
+                DB::table('expense_user')
+                    ->where('id', $debt->id)
+                    ->update([
+                        'is_paid' => true,
+                        'paid_at' => now()
+                    ]);
+                
+                \Log::info('Dette payée totalement', [
+                    'expense_id' => $debt->expense_id,
+                    'amount' => $owedAmount
+                ]);
+                
+                $remainingAmount -= $owedAmount;
+            } else {
+                // Cas partiel - plus rare mais possible
+                // Pour simplifier, on marque quand même comme payé car le montant correspond rarement
+                DB::table('expense_user')
+                    ->where('id', $debt->id)
+                    ->update([
+                        'is_paid' => true,
+                        'paid_at' => now()
+                    ]);
+                
+                \Log::info('Dette payée (montant ajusté)', [
+                    'expense_id' => $debt->expense_id,
+                    'amount' => $owedAmount
+                ]);
+                
+                $remainingAmount = 0;
+                break;
+            }
+        }
+
+        // 4️⃣ Bonus de réputation pour celui qui rembourse
+        if ($user->id === $fromUser->id) {
+            $fromUser->increment('reputation');
+            \Log::info('Réputation augmentée pour ' . $fromUser->name);
+        }
+
+        DB::commit();
+
+        return redirect()->route('colocations.show', $colocation)
+            ->with('success', 'Paiement de ' . number_format($request->amount, 2) . ' € enregistré !');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Erreur paiement: ' . $e->getMessage());
+        return redirect()->route('colocations.show', $colocation)
+            ->with('error', 'Erreur : ' . $e->getMessage());
+    }
+}
+/**
+ * Recalculer tous les soldes (utile pour déboguer)
+ */
+public function recalculateBalances(Colocation $colocation)
+{
+    $members = $colocation->activeUsers()->get();
+    $expenses = $colocation->expenses()->with('debtors')->get();
+    
+    $balances = [];
+    
+    foreach ($members as $member) {
+        $balances[$member->id] = [
+            'user' => $member,
+            'paid' => 0,
+            'owed' => 0,
+            'balance' => 0
+        ];
+    }
+    
+    foreach ($expenses as $expense) {
+        // Ce que le payeur a payé
+        if (isset($balances[$expense->user_id])) {
+            $balances[$expense->user_id]['paid'] += $expense->amount;
+        }
+        
+        // Ce que chacun doit
+        foreach ($expense->debtors as $debtor) {
+            if (isset($balances[$debtor->id]) && !$debtor->pivot->is_paid) {
+                $balances[$debtor->id]['owed'] += $debtor->pivot->amount_owed;
+            }
+        }
+    }
+    
+    // Calculer le solde final
+    foreach ($balances as $userId => &$balance) {
+        $balance['balance'] = $balance['paid'] - $balance['owed'];
+    }
+    
+    return $balances;
 }
 
     /**
@@ -245,45 +372,47 @@ public function markSettlement(Request $request, Colocation $colocation)
     /**
      * Calculer les soldes pour une colocation
      */
-    public static function calculateBalances(Colocation $colocation)
-    {
-        $members = $colocation->activeUsers()->get();
-        $balances = [];
+public static function calculateBalances(Colocation $colocation)
+{
+    $members = $colocation->activeUsers()->get();
+    $balances = [];
 
-        // Initialiser les soldes à 0
-        foreach ($members as $member) {
-            $balances[$member->id] = [
-                'user' => $member,
-                'paid' => 0,      // Total payé par cette personne
-                'owed' => 0,       // Total que cette personne doit
-                'balance' => 0     // Solde final (positif = à recevoir, négatif = à donner)
-            ];
-        }
-
-        // Récupérer toutes les dépenses de la colocation
-        $expenses = $colocation->expenses()->with('debtors')->get();
-
-        foreach ($expenses as $expense) {
-            // Ce que le payeur a payé
-            if (isset($balances[$expense->user_id])) {
-                $balances[$expense->user_id]['paid'] += $expense->amount;
-            }
-
-            // Ce que chacun doit
-            foreach ($expense->debtors as $debtor) {
-                if (isset($balances[$debtor->id])) {
-                    $balances[$debtor->id]['owed'] += $debtor->pivot->amount_owed;
-                }
-            }
-        }
-
-        // Calculer le solde final
-        foreach ($balances as $userId => &$balance) {
-            $balance['balance'] = $balance['paid'] - $balance['owed'];
-        }
-
-        return $balances;
+    // Initialiser les soldes à 0
+    foreach ($members as $member) {
+        $balances[$member->id] = [
+            'user' => $member,
+            'paid' => 0,
+            'owed' => 0,
+            'balance' => 0
+        ];
     }
+
+    // Récupérer toutes les dépenses de la colocation
+    $expenses = $colocation->expenses()->with(['debtors' => function($query) {
+        $query->wherePivot('is_paid', false); // SEULEMENT LES DETTES NON PAYÉES
+    }])->get();
+
+    foreach ($expenses as $expense) {
+        // Ce que le payeur a payé
+        if (isset($balances[$expense->user_id])) {
+            $balances[$expense->user_id]['paid'] += $expense->amount;
+        }
+
+        // Ce que chacun doit (seulement les dettes non payées)
+        foreach ($expense->debtors as $debtor) {
+            if (isset($balances[$debtor->id])) {
+                $balances[$debtor->id]['owed'] += $debtor->pivot->amount_owed;
+            }
+        }
+    }
+
+    // Calculer le solde final
+    foreach ($balances as $userId => &$balance) {
+        $balance['balance'] = $balance['paid'] - $balance['owed'];
+    }
+
+    return $balances;
+}
 
     /**
      * Calculer les remboursements simplifiés (qui doit à qui)
@@ -347,4 +476,5 @@ public function markSettlement(Request $request, Colocation $colocation)
 
         return $settlements;
     }
+    
 }

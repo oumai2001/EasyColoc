@@ -10,7 +10,7 @@
         </div>
     </x-slot>
 
-    <div class="py-12 bg-amber-50">
+    <div class="py-12 text-[#000000]">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if(session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -25,9 +25,9 @@
             @endif
 
             <!-- Infos de la colocation -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 border border-amber-200">
+            <div class="text-[#000000] rounded-xl shadow-lg overflow-hidden mb-6 border border-amber-200">
                 <div class="bg-gradient-to-r from-amber-800 to-amber-700 px-6 py-3">
-                    <h3 class="text-lg font-medium text-white">Informations</h3>
+                    <h3 class="text-lg font-medium text-[#f48516]">Informations</h3>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-2 gap-4">
@@ -56,7 +56,7 @@
                     @if($colocation->isOwner(Auth::user()))
                         <div class="mt-4">
                             <a href="{{ route('colocations.edit', $colocation) }}" 
-                               class="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-4 py-2 rounded-lg text-sm hover:shadow-lg transition inline-flex items-center">
+                               class="bg-gradient-to-r from-amber-600 to-amber-700 text-[#e07a59] px-4 py-2 rounded-lg text-sm hover:shadow-lg transition inline-flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
@@ -74,9 +74,9 @@
                 $expenses = $colocation->expenses()->with(['payer', 'category'])->latest('expense_date')->get();
             @endphp
 
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 border border-amber-200">
+            <div class="text-[#000000] rounded-xl shadow-lg overflow-hidden mb-6 border border-amber-200">
                 <div class="bg-gradient-to-r from-amber-800 to-amber-700 px-6 py-3">
-                    <h3 class="text-lg font-medium text-white">Soldes et remboursements</h3>
+                    <h3 class="text-lg font-medium text-[#000000]">Soldes et remboursements</h3>
                 </div>
                 <div class="p-6">
                     
@@ -141,7 +141,7 @@
                                                 
                                                 @if($user->id == $settlement['from']->id)
                                                     <button type="submit" 
-                                                            class="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-sm px-4 py-2 rounded-lg transition flex items-center shadow-md">
+                                                            class="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-[#000000] text-sm px-4 py-2 rounded-lg transition flex items-center shadow-md">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                                         </svg>
@@ -149,7 +149,7 @@
                                                     </button>
                                                 @else
                                                     <button type="submit" 
-                                                            class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white text-sm px-4 py-2 rounded-lg transition flex items-center shadow-md">
+                                                            class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-[#000000] text-sm px-4 py-2 rounded-lg transition flex items-center shadow-md">
                                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                         </svg>
@@ -203,7 +203,7 @@
             <!-- Liste des membres -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 border border-amber-200">
                 <div class="bg-gradient-to-r from-amber-800 to-amber-700 px-6 py-3">
-                    <h3 class="text-lg font-medium text-white">Membres de la colocation</h3>
+                    <h3 class="text-lg font-medium text-[#000000]">Membres de la colocation</h3>
                 </div>
                 <div class="p-6">
                     
@@ -230,7 +230,7 @@
                                                      class="w-8 h-8 rounded-full mr-2 object-cover border-2 border-amber-300">
                                             @else
                                                 <div class="w-8 h-8 rounded-full bg-gradient-to-r from-amber-600 to-amber-700 mr-2 flex items-center justify-center border-2 border-amber-300">
-                                                    <span class="text-sm font-medium text-white">{{ substr($member->name, 0, 1) }}</span>
+                                                    <span class="text-sm font-medium text-[#000000]">{{ substr($member->name, 0, 1) }}</span>
                                                 </div>
                                             @endif
                                             <div>
@@ -285,7 +285,7 @@
                                            class="flex-1 rounded-lg border-amber-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50 px-4 py-2"
                                            required>
                                     <button type="submit" 
-                                            class="bg-gradient-to-r from-amber-600 to-amber-700 text-white font-bold py-2 px-6 rounded-lg hover:shadow-lg transition flex items-center">
+                                            class="bg-gradient-to-r from-amber-600 to-amber-700 text-[#000000] font-bold py-2 px-6 rounded-lg hover:shadow-lg transition flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                         </svg>
@@ -302,7 +302,7 @@
                                 <h5 class="font-medium text-sm text-amber-700 mb-2">Invitations en attente :</h5>
                                 <div class="space-y-2">
                                     @foreach($pendingInvitations as $invitation)
-                                        <div class="flex items-center justify-between bg-amber-50 p-3 rounded-lg border border-amber-200">
+                                        <div class="flex items-center justify-between  text-amber-900 p-3 rounded-lg border border-amber-200">
                                             <div>
                                                 <span class="text-sm text-amber-900">{{ $invitation->email }}</span>
                                                 <span class="text-xs text-amber-600 ml-2">
@@ -334,7 +334,7 @@
             <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-amber-200">
                 <div class="bg-gradient-to-r from-amber-800 to-amber-700 px-6 py-3">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-medium text-white">Dépenses</h3>
+                        <h3 class="text-lg font-medium text-[#000000]">Dépenses</h3>
                         <div class="flex space-x-2">
                             <a href="{{ route('categories.index', $colocation) }}" 
                                class="bg-amber-200 text-amber-800 hover:bg-amber-300 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center">
@@ -344,7 +344,7 @@
                                 Catégories
                             </a>
                             <a href="{{ route('expenses.create', $colocation) }}" 
-                               class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-2 px-4 rounded-lg text-sm flex items-center shadow-md">
+                               class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-[#e8750a] font-bold py-2 px-4 rounded-lg text-sm flex items-center shadow-md">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
@@ -358,7 +358,7 @@
                     @if($expenses->count() > 0)
                         <div class="space-y-3">
                             @foreach($expenses as $expense)
-                                <div class="border border-amber-200 rounded-lg p-4 hover:shadow-md transition bg-amber-50">
+                                <div class="border border-amber-200 rounded-lg p-4 hover:shadow-md transition  text-amber-900">
                                     <div class="flex justify-between items-start">
                                         <div class="flex items-start space-x-3">
                                             <div class="w-2 h-12 rounded-full" style="background-color: {{ $expense->category->color ?? '#78350f' }}"></div>

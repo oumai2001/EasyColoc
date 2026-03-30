@@ -6,7 +6,7 @@
             </h2>
             <div class="flex space-x-2">
                 <a href="{{ route('categories.create', $colocation) }}" 
-                   class="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-4 py-2 rounded-lg text-sm hover:shadow-lg transition">
+                   class="bg-gradient-to-r from-amber-600 to-amber-700 text-black px-4 py-2 rounded-lg text-sm hover:shadow-lg transition">
                     + Nouvelle catégorie
                 </a>
                 <a href="{{ route('colocations.show', $colocation) }}" 

@@ -22,14 +22,20 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+ public function store(LoginRequest $request): RedirectResponse
+{
+    $request->authenticate();
 
-        $request->session()->regenerate();
+    $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+    // 🔹 Vérifier s'il y a un token d'invitation dans la session
+    if ($token = $request->session()->pull('invitation_token')) {
+        // supprime token de la session et redirige vers accept invitation
+        return redirect()->route('invitations.accept', $token);
     }
+
+    return redirect()->intended(route('dashboard', absolute: false));
+}
 
     /**
      * Destroy an authenticated session.

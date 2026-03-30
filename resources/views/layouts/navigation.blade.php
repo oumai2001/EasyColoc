@@ -18,21 +18,21 @@
 
                 <!-- Navigation Links Desktop -->
                 <div class="hidden sm:flex sm:space-x-2 text-[#000000]">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-[#000000] hover:bg-white/20 px-4 py-2 rounded-lg transition-all duration-200">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-[#000000] px-4 py-2 rounded-lg transition-all duration-200">
                         <div class="flex items-center space-x-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-[#000000]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                             </svg>
-                            <span>Dashboard</span>
+                            <span class="text-[#000000]">Dashboard</span>
                         </div>
                     </x-nav-link>
                     
-                    <x-nav-link :href="route('colocations.index')" :active="request()->routeIs('colocations.*')" class="text-[#000000] hover:bg-white/20 px-4 py-2 rounded-lg transition-all duration-200">
+                    <x-nav-link :href="route('colocations.index')" :active="request()->routeIs('colocations.*')" class="text-[#000000] px-4 py-2 rounded-lg transition-all duration-200">
                         <div class="flex items-center space-x-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-[#000000]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
-                            <span>Mes Colocations</span>
+                            <span class="text-[#000000]">Mes Colocations</span>
                         </div>
                     </x-nav-link>
                 </div>
@@ -51,14 +51,14 @@
                 <!-- Profile Dropdown -->
                 <x-dropdown align="right" width="56">
                     <x-slot name="trigger">
-                        <button class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 border border-white/20 backdrop-blur-sm">
+                        <button class="flex items-center space-x-3 px-3 py-2 rounded-lg   transition-all duration-200 border border-white/20 backdrop-blur-sm">
                             <div class="flex items-center">
                                 @if(Auth::user()->avatar)
                                     <img src="{{ Storage::url(Auth::user()->avatar) }}" 
                                          alt="{{ Auth::user()->name }}" 
                                          class="w-8 h-8 rounded-full border-2 border-white shadow-md">
                                 @else
-                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 border-2 border-white shadow-md flex items-center justify-center text-white font-bold text-sm">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 border-2 border-white shadow-md flex items-center justify-center text-black font-bold text-sm">
                                         {{ substr(Auth::user()->name, 0, 1) }}
                                     </div>
                                 @endif
@@ -71,15 +71,15 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <div class="py-2">
+                        <div class="py-2 bg-white hover:bg-gray-50">
                             <!-- Header -->
                             <div class="px-4 py-3 border-b border-gray-100">
-                                <p class="text-xs text-gray-500">Connecté en tant que</p>
+                                <p class="text-xs text-[#000000]">Connecté en tant que</p>
                                 <p class="text-sm font-semibold text-gray-800 truncate">{{ Auth::user()->email }}</p>
                             </div>
 
                             <!-- Menu Items -->
-                            <x-dropdown-link :href="route('profile.edit')" class="flex items-center px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50">
+                            <x-dropdown-link :href="route('profile.edit')" class="flex items-center px-4 py-3 hover:bg-gradient-to-r  hover:to-indigo-50">
                                 <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
                                     <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -87,7 +87,7 @@
                                 </div>
                                 <div>
                                     <p class="font-medium text-[#000000]">Mon Profil</p>
-                                    <p class="text-xs text-[#000000]">Modifier mes informations</p>
+                                    <p class="text-xs text-gray-500">Modifier mes informations</p>
                                 </div>
                             </x-dropdown-link>
 

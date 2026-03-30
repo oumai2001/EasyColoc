@@ -6,8 +6,18 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class Membership extends Pivot
 {
-    protected $casts = [
-        'joined_at' => 'datetime',
-        'left_at'   => 'datetime',
+    protected $table = 'memberships';
+
+    protected $fillable = [
+        'colocation_id',
+        'user_id',
+        'role',
+        'joined_at',
+        'left_at',
+    ];
+
+    protected $dates = [
+        'joined_at',
+        'left_at',
     ];
 }

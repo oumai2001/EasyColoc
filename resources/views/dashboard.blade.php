@@ -17,10 +17,10 @@
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <!-- Colocations actives -->
-                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-[#000000]">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-blue-100 text-sm">Colocations actives</p>
+                            <p class="text-[#000000] text-sm">Colocations actives</p>
                             <p class="text-3xl font-bold">{{ Auth::user()->activeColocations->count() }}</p>
                         </div>
                         <div class="bg-white/20 p-3 rounded-xl">
@@ -32,7 +32,7 @@
                 </div>
 
                 <!-- Total dépensé -->
-                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white">
+                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-[#000000]">
                     @php
                         $totalSpent = 0;
                         foreach(Auth::user()->activeColocations as $coloc) {
@@ -53,7 +53,7 @@
                 </div>
 
                 <!-- Réputation -->
-                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white">
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6text-[#000000]">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-purple-100 text-sm">Niveau de confiance</p>
@@ -79,7 +79,7 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-6">
                 <!-- Créer une colocation -->
                 @if(Auth::user()->activeColocations->count() == 0)
                     <div class="bg-white rounded-2xl shadow-lg p-8 text-center">
@@ -98,7 +98,7 @@
                 @endif
 
                 <!-- Activité récente -->
-                <div class="bg-white rounded-2xl shadow-lg p-8">
+                <div class="bg-white rounded-2xl shadow-lg p-2 ">
                     <h3 class="text-xl font-bold text-gray-900 mb-4">Activité récente</h3>
                     @php
                         $recentExpenses = \App\Models\Expense::whereIn('colocation_id', Auth::user()->activeColocations->pluck('id'))

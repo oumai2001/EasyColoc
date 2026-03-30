@@ -186,48 +186,43 @@ public function leave(Request $request, Colocation $colocation)
 
 /**
  * Annuler une colocation (pour le propriétaire)
- */
-public function cancel(Request $request, Colocation $colocation)
+ */public function cancel(Request $request, Colocation $colocation)
 {
-    // Vérifier que l'utilisateur est le propriétaire
     if (!$colocation->isOwner(Auth::user())) {
         return redirect()->route('colocations.index')
             ->with('error', 'Seul le propriétaire peut annuler la colocation.');
     }
 
     DB::transaction(function () use ($colocation) {
-        // Récupérer tous les membres actifs (sauf l'owner)
-        $members = $colocation->activeUsers()
-            ->where('users.id', '!=', $colocation->owner_id)
-            ->get();
-        
         $owner = $colocation->owner;
-        
-        // Pour chaque membre, vérifier les dettes
+
+        // Tous les membres actifs sauf owner
+        $members = $colocation->users->filter(function($user) use ($colocation) {
+            return $user->id !== $colocation->owner_id && $user->pivot->left_at === null;
+        });
+
         foreach ($members as $member) {
             $hasDebts = $colocation->memberHasDebts($member);
-            
+
             if ($hasDebts) {
-                // Membre avec dette : pénalité
                 $member->decreaseReputation(1);
-                
-                // Transférer la dette à l'owner
                 $colocation->transferDebtsToOwner($member);
             } else {
-                // Membre sans dette : bonus
                 $member->increaseReputation(1);
             }
         }
-        
-        // Mettre à jour le statut de la colocation
+
         $colocation->update(['status' => 'cancelled']);
-        
-        // Marquer tous les membres comme ayant quitté
-        $colocation->users()->wherePivotNull('left_at')->update([
-            'left_at' => now()
-        ]);
-        
-        // Bonus pour l'owner s'il a géré correctement
+
+        // Marquer tous les membres comme quittés
+        foreach ($colocation->users as $user) {
+            if ($user->pivot->left_at === null) {
+                $colocation->users()->updateExistingPivot($user->id, [
+                    'left_at' => now()
+                ]);
+            }
+        }
+
         $owner->increaseReputation(1);
     });
 

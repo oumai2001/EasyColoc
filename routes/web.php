@@ -4,8 +4,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ColocationController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ExpenseController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,6 +22,11 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// ==================== ROUTES PUBLIQUES (SANS AUTH) ====================
+// Invitations (accessibles sans authentification)
+Route::get('/invitations/accept/{token}', [InvitationController::class, 'accept'])->name('invitations.accept');
+Route::get('/invitations/decline/{token}', [InvitationController::class, 'decline'])->name('invitations.decline');
 
 // Routes protégées par authentification
 Route::middleware('auth')->group(function () {
@@ -54,18 +60,15 @@ Route::middleware('auth')->group(function () {
     
     // ==================== PAIEMENTS ====================
     Route::post('/colocations/{colocation}/payments/settlement', [ExpenseController::class, 'markSettlement'])->name('payments.settlement');
+    
+    // ==================== CATÉGORIES ====================
+    Route::get('/colocations/{colocation}/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/colocations/{colocation}/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('/colocations/{colocation}/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::get('/colocations/{colocation}/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('/colocations/{colocation}/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/colocations/{colocation}/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 });
 
-// ==================== ROUTES PUBLIQUES ====================
-// Invitations (accessibles sans authentification)
-Route::get('/invitations/accept/{token}', [InvitationController::class, 'accept'])->name('invitations.accept');
-Route::get('/invitations/decline/{token}', [InvitationController::class, 'decline'])->name('invitations.decline');
-// ==================== CATÉGORIES ====================
-Route::get('/colocations/{colocation}/categories', [CategoryController::class, 'index'])->name('categories.index');
-Route::get('/colocations/{colocation}/categories/create', [CategoryController::class, 'create'])->name('categories.create');
-Route::post('/colocations/{colocation}/categories', [CategoryController::class, 'store'])->name('categories.store');
-Route::get('/colocations/{colocation}/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
-Route::put('/colocations/{colocation}/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
-Route::delete('/colocations/{colocation}/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 // Routes d'authentification (Laravel Breeze)
 require __DIR__.'/auth.php';
