@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<<<<<<< HEAD
     <title>@yield('title', 'EasyColoc') - {{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
@@ -67,24 +66,5 @@
 
     <!-- Scripts supplémentaires -->
     @stack('scripts')
-=======
-    <title>{{ config('app.name', 'EasyColoc') }}</title>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-    <!-- Vite -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="bg-background-light font-sans text-gray-900 antialiased">
-
-    <!-- Page Content (design dyalk kayban direct) -->
-    <div class="min-h-screen w-full">
-        {{ $slot }}
-    </div>
-
->>>>>>> 8e94925080aafa664147f8b1fd6ee70babb48e2c
 </body>
 </html>
