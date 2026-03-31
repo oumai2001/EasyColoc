@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+<<<<<<< HEAD
 use App\Http\Controllers\ColocationController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ExpenseController;
@@ -14,15 +15,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Page d'accueil publique
+=======
+use Illuminate\Support\Facades\Route;
+
+>>>>>>> 8e94925080aafa664147f8b1fd6ee70babb48e2c
 Route::get('/', function () {
     return view('welcome');
 });
 
+<<<<<<< HEAD
 // Dashboard (protégé)
+=======
+>>>>>>> 8e94925080aafa664147f8b1fd6ee70babb48e2c
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+<<<<<<< HEAD
 // ==================== ROUTES PUBLIQUES (SANS AUTH) ====================
 // Invitations (accessibles sans authentification)
 Route::get('/invitations/accept/{token}', [InvitationController::class, 'accept'])->name('invitations.accept');
@@ -72,3 +81,12 @@ Route::middleware('auth')->group(function () {
 
 // Routes d'authentification (Laravel Breeze)
 require __DIR__.'/auth.php';
+=======
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
+>>>>>>> 8e94925080aafa664147f8b1fd6ee70babb48e2c
